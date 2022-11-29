@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { saveUserInfo, addProfileRegistered, currentUser, loadProfileByToken, saveToExport, loadRegisteredUserList, token, logout, addSuccessLabel2, addErrorLabel2, logoutGuest, addSuccessLabel, addErrorLabel, login, createUser, loginAsGuest, loadUserList } from './rest';
+import { addProfile, saveUserInfo, addProfileRegistered, currentUser, loadProfileByToken, saveToExport, loadRegisteredUserList, token, logout, addSuccessLabel2, addErrorLabel2, logoutGuest, addSuccessLabel, addErrorLabel, login, createUser, loginAsGuest, loadUserList } from './rest';
 import { openConnection, sendPlainMessage, stompClient } from './sockets';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,6 +15,27 @@ $(() => {
     document.getElementById("export-btn").disabled = true;
     document.getElementById("profilePage").style.display = "none";
   }
+  if (sessionStorage.getItem("currentUser") == null && sessionStorage.getItem("nickName") != null) {
+    document.getElementById("profilePage").style.display = "none";
+    document.getElementById("profileSection").innerHTML = "";
+    addProfile();
+    disableSignin();
+    addSuccessLabel("Connected!");
+    document.getElementById("send-btn").disabled = false;
+    document.getElementById("export-btn").disabled = false;
+
+  }
+  if (sessionStorage.getItem("currentUser") != null) {
+    document.getElementById("profilePage").style.display = "none";
+    document.getElementById("profileSection").innerHTML = "";
+    addProfileRegistered(JSON.parse(sessionStorage.getItem("currentUser")));
+    disableSignin();
+    addSuccessLabel("Connected!");
+    document.getElementById("send-btn").disabled = false;
+    document.getElementById("export-btn").disabled = false;
+
+  }
+
 
   let token = sessionStorage.getItem("token");
 
@@ -151,7 +172,7 @@ $(document).ready(function () {
     document.getElementById("isPublic").disabled = false;
     document.getElementById("isPrivate").disabled = false;
 
-    loadProfileByToken(currentUser);
+    loadProfileByToken(JSON.parse(sessionStorage.getItem("currentUser")));
   })
 });
 
@@ -179,20 +200,31 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $(document).on("click", "#saveProfile", function () {
-    currentUser.nickName = document.getElementById("pro-nickName").value;
-    currentUser.firstName = document.getElementById("pro-firstName").value;
-    currentUser.lastName = document.getElementById("pro-lastName").value;
-    currentUser.birthDate = document.getElementById("pro-birthday").value;
-    currentUser.description = document.getElementById("pro-desc").value;
-    currentUser.age = document.getElementById("pro-age").value;
-    currentUser.imgUrl = document.getElementById('output').src;
-    currentUser.status = document.getElementById("statuses").value;
-    if (document.getElementById("isPublic").checked)
-      currentUser.private = false;
-    else
-      currentUser.private = true;
+    var mycurrentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+    console.log("currentUser");
+    console.log(mycurrentUser);
 
-    saveUserInfo(currentUser);
+
+
+    mycurrentUser.nickName = document.getElementById("pro-nickName").value;
+    mycurrentUser.firstName = document.getElementById("pro-firstName").value;
+    mycurrentUser.lastName = document.getElementById("pro-lastName").value;
+    mycurrentUser.birthDate = document.getElementById("pro-birthday").value;
+    mycurrentUser.description = document.getElementById("pro-desc").value;
+    mycurrentUser.age = document.getElementById("pro-age").value;
+    mycurrentUser.imgUrl = document.getElementById('output').src;
+    mycurrentUser.status = document.getElementById("statuses").value;
+    if (document.getElementById("isPublic").checked)
+      mycurrentUser.private = false;
+    else
+      mycurrentUser.private = true;
+    sessionStorage.removeItem("currentUser");
+    sessionStorage.setItem("currentUser",JSON.stringify(mycurrentUser));
+    sessionStorage.removeItem("nickName");
+    sessionStorage.setItem("nickName",mycurrentUser.nickName);
+
+    console.log(mycurrentUser);
+    saveUserInfo(mycurrentUser);
   });
 });
 

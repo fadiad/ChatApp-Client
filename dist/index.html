@@ -93,65 +93,67 @@
                       </tbody>
                       <script>
                         function getUserById(id) {
-
-                          fetch("http://localhost:8080/user/userById", {
-                            method: 'POST',
-                            body: JSON.stringify({ token: id }),
-                            headers: {
-                              'Content-Type': 'application/json',
-                              'Access-Control-Allow-Origin': '*',
-                              'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
-                            }
-                          }).then((res => {
-                            let data = res.json();
-                            data.then(function (result) {
-                              let msg = result.message;
-                              console.log("-------------");
-                              console.log(result);
-
-                              if (!result.private) {
-                                document.getElementById("profilePage").style.display = "block";
-                                var image = document.getElementById('output');
-                                image.src = result.imgUrl;
-
-                                document.getElementById("pro-nickName").value = result.nickName;
-                                document.getElementById("pro-firstName").value = result.firstName;
-                                document.getElementById("pro-lastName").value = result.lastName;
-                                document.getElementById("pro-email").value = result.email;
-                                document.getElementById("pro-email").disabled = true;
-                                document.getElementById("pro-birthday").value = result.birthDate;
-                                document.getElementById("pro-desc").value = result.description;
-                                document.getElementById("pro-age").value = result.age;
-
-                                document.getElementById("isPublic").checked = true;
-
-
-
-
-                                var image = document.getElementById('output').disabled = true;
-                                image.src = result.imgUrl;
-                                document.getElementById("image_input").disabled = true;
-                                document.getElementById("saveProfile").style.visibility = "hidden";
-                                document.getElementById("statuses").disabled = true;
-
-
-                                document.getElementById("pro-nickName").disabled = true;
-                                document.getElementById("pro-firstName").disabled = true;
-                                document.getElementById("pro-lastName").disabled = true;
-                                document.getElementById("pro-email").disabled = true;
-                                document.getElementById("pro-birthday").disabled = true;
-                                document.getElementById("pro-desc").disabled = true;
-                                document.getElementById("pro-age").disabled = true;
-
-                                document.getElementById("isPublic").disabled = true;
-                                document.getElementById("isPrivate").disabled = true;
-                                document.getElementById("successLbl3").innerHTML = "";
-                                document.getElementById("errorLbl3").innerHTML = "";
+                          if (sessionStorage.getItem("token")!=undefined) {
+                            fetch("http://localhost:8080/user/userById", {
+                              method: 'POST',
+                              body: JSON.stringify({ token: id }),
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
                               }
+                            }).then((res => {
+                              let data = res.json();
+                              data.then(function (result) {
+                                let msg = result.message;
+                                console.log("-------------");
+                                console.log(result);
+
+                                if (!result.private) {
+                                  document.getElementById("profilePage").style.display = "block";
+                                  var image = document.getElementById('output');
+                                  image.src = result.imgUrl;
+                                  document.getElementById("statuses").value = result.status;
+                                  document.getElementById("pro-nickName").value = result.nickName;
+                                  document.getElementById("pro-firstName").value = result.firstName;
+                                  document.getElementById("pro-lastName").value = result.lastName;
+                                  document.getElementById("pro-email").value = result.email;
+                                  document.getElementById("pro-email").disabled = true;
+                                  document.getElementById("pro-birthday").value = result.birthDate;
+                                  document.getElementById("pro-desc").value = result.description;
+                                  document.getElementById("pro-age").value = result.age;
+
+                                  document.getElementById("isPublic").checked = true;
 
 
-                            });
-                          }))
+
+
+                                  var image = document.getElementById('output').disabled = true;
+                                  image.src = result.imgUrl;
+                                  document.getElementById("image_input").disabled = true;
+                                  document.getElementById("saveProfile").style.visibility = "hidden";
+                                  document.getElementById("statuses").disabled = true;
+
+
+                                  document.getElementById("pro-nickName").disabled = true;
+                                  document.getElementById("pro-firstName").disabled = true;
+                                  document.getElementById("pro-lastName").disabled = true;
+                                  document.getElementById("pro-email").disabled = true;
+                                  document.getElementById("pro-birthday").disabled = true;
+                                  document.getElementById("pro-desc").disabled = true;
+                                  document.getElementById("pro-age").disabled = true;
+
+                                  document.getElementById("isPublic").disabled = true;
+                                  document.getElementById("isPrivate").disabled = true;
+                                  document.getElementById("successLbl3").innerHTML = "";
+                                  document.getElementById("errorLbl3").innerHTML = "";
+                                }
+
+
+                              });
+                            }))
+                          }
+
                         }
                       </script>
 
@@ -217,8 +219,8 @@
                   <div>
                     <label for=statuses>Your Status</label>
                     <select name="statuses" id="statuses">
-                      <option value="Online">online</option>
-                      <option value="Away">away</option>
+                      <option value="online">Online</option>
+                      <option value="Away">Away</option>
                     </select>
                     <br><br>
                   </div>

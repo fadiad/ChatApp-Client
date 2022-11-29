@@ -153,6 +153,7 @@ function loadProfileByToken(currentUser) {
   var image = document.getElementById('output');
   image.src = currentUser.imgUrl;
 
+  document.getElementById("statuses").value = currentUser.status;
   document.getElementById("pro-nickName").value = currentUser.nickName;
   document.getElementById("pro-firstName").value = currentUser.firstName;
   document.getElementById("pro-lastName").value = currentUser.lastName;
@@ -185,10 +186,10 @@ const loginAsGuest = (user) => {
     data.then(function (result) {
       let msg = result.message;
       if (msg == null) {
-        sessionStorage.setItem("nickName", user.nickName);
+        sessionStorage.setItem("nickName", "Guest-"+user.nickName);
         sessionStorage.setItem("token", result);
         stompClient.send("/app/hello", [],
-          JSON.stringify({ name: "Guest-" + user.nickName + " has " })
+          JSON.stringify({ name: sessionStorage.getItem("nickName") + " has " })
         )
         addProfile(result);
         disableSignin();
@@ -287,7 +288,7 @@ function addSuccessLabel3(msg) {
 // }
 
 
-function addProfile(user) {
+function addProfile() {
 
   let profile = document.getElementById("profileSection");
 
@@ -296,7 +297,7 @@ function addProfile(user) {
   <div class="thumb">
     <img width="40px" radius="50%" height="40px" class="img-fluid" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="">
   </div>
-    <h5 class="mb-0" id="currentUserName">Guest-${sessionStorage.getItem("nickName")}</h5>
+    <h5 class="mb-0" id="currentUserName">${sessionStorage.getItem("nickName")}</h5>
     <a class="mb-0" id="logoutG">Logout</a>
     `
   )
@@ -383,9 +384,7 @@ function logoutGuest(Nickname) {
 
 function saveUserInfo(user) {
   console.log(user);
-  console.log(user.isPrivate);
-  console.log(user.isPrivate);
-  console.log(user.isPrivate);
+
   fetch(serverAddress + "/user/saveProfile", {
     method: 'POST',
     body: JSON.stringify({
@@ -413,7 +412,7 @@ function saveUserInfo(user) {
         alert("Profile Changed Successfully!");
         document.getElementById("mainPage").style.display = "block";
         document.getElementById("profilePage").style.display = "none";
-        addProfileRegistered(currentUser);
+        addProfileRegistered(JSON.parse(sessionStorage.getItem("currentUser")));
       }
       else
         addErrorLabel3(msg);
@@ -489,7 +488,7 @@ function insertRegisteredList(users) {
 
       <div class="candidate-list-title">
      
-        <h5 class="mb-0"><a href="#"> ${element.nickName}  ${element.role == 1 ? "<span>*</span>" : " <span></span>"}</a></h5>
+        <h5 class="mb-0"><button onClick="getUserById(${element.id})" class="btn btn-link"> ${element.nickName}  ${element.role == 1 ? "<span>*</span>" : " <span></span>"}</button></h5>
         ${element.isMuted == true ? ` <h6 id=${element.id} class="mb-0">unmute</h6> ` :
         ` <h6  id=${element.id} class="mb-0">mute</h6>`}
       </div>
@@ -693,4 +692,4 @@ function insertList(users) {
 
 
 
-export { saveUserInfo, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }
+export { saveUserInfo,addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }
