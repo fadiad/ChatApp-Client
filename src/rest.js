@@ -186,12 +186,12 @@ const loginAsGuest = (user) => {
     data.then(function (result) {
       let msg = result.message;
       if (msg == null) {
-        sessionStorage.setItem("nickName", "Guest-"+user.nickName);
+        sessionStorage.setItem("nickName", "Guest-" + user.nickName);
         sessionStorage.setItem("token", result);
         stompClient.send("/app/hello", [],
           JSON.stringify({ name: sessionStorage.getItem("nickName") + " has " })
         )
-        addProfile(result);
+        addProfile();
         disableSignin();
         addSuccessLabel("Connected!");
         document.getElementById("send-btn").disabled = false;
@@ -476,7 +476,14 @@ function insertRegisteredList(users) {
   let table = document.getElementById("candidates-list");
   var tbody = table.getElementsByTagName('tbody')[0];
   users.forEach(element => {
+    if (element.isMuted&&element.nickName==sessionStorage.getItem("nickName")) {
+      document.getElementById("mutelbl").textContent = "(*) You Are Muted By The Admin!";
+    }
+    if (!element.isMuted&&element.nickName==sessionStorage.getItem("nickName")) {
+      document.getElementById("mutelbl").textContent = "";
+    }
     let image = element.imgUrl;
+    console.log(element);
     tbody.insertRow(0).innerHTML =
       `
     <td class="title" width="60%">
@@ -489,8 +496,8 @@ function insertRegisteredList(users) {
       <div class="candidate-list-title">
      
         <h5 class="mb-0"><button onClick="getUserById(${element.id})" class="btn btn-link"> ${element.nickName}  ${element.role == 1 ? "<span>*</span>" : " <span></span>"}</button></h5>
-        ${element.isMuted == true ? ` <h6 id=${element.id} class="mb-0">unmute</h6> ` :
-        ` <h6  id=${element.id} class="mb-0">mute</h6>`}
+        ${element.isMuted == true ? ` <h6 id=${element.id} class="mute mb-0">unmute</h6> ` :
+        ` <h6  id=${element.id} class="mute mb-0">mute</h6>`}
       </div>
 
       </div>
@@ -504,7 +511,7 @@ function insertRegisteredList(users) {
     </td>
     `
 
-    $("h6").each(function (index) {
+    $("mute").each(function (index) {
       $(this).on("click", function () {
         let id = $(this).attr('id');
         let token = sessionStorage.getItem("token");
@@ -525,6 +532,8 @@ function insertRegisteredList(users) {
               document.getElementById(id).innerText = 'unmute';
               document.getElementById("send-btn").disabled = true;
               document.getElementById("export-btn").disabled = true;
+
+
             } else {
               alert("only admins can mute/unmute");
               document.getElementById("send-btn").disabled = false;
@@ -549,10 +558,14 @@ function insertRegisteredList(users) {
               document.getElementById(id).innerText = 'mute';
               document.getElementById("send-btn").disabled = false;
               document.getElementById("export-btn").disabled = false;
+
             } else {
               alert("only admins can mute/unmute");
               document.getElementById("send-btn").disabled = true;
               document.getElementById("export-btn").disabled = true;
+
+
+
             }
 
           }))
@@ -602,6 +615,18 @@ function insertList(users) {
   tbody.innerHTML = "";
   console.log(users);
   users.forEach(element => {
+    if (element.muted&&"Guest-"+element.nickName==sessionStorage.getItem("nickName")) {
+      document.getElementById("mutelbl").textContent = "(*) You Are Muted By The Admin!";
+    }
+    if (!element.muted&&"Guest-"+element.nickName==sessionStorage.getItem("nickName")) {
+      document.getElementById("mutelbl").textContent = "";
+    }
+
+    // else {
+    //   document.getElementById("mutelbl").textContent = "";
+    // }
+
+
     tbody.insertRow(-1).innerHTML =
       `
     <td class="title" width="60%">
@@ -644,11 +669,15 @@ function insertList(users) {
               'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
             }
           }).then((res => {
+            console.log("res");
             console.log(res);
             if (res.status == 200) {
               document.getElementById(nickName).innerText = 'unmute';
-              document.getElementById("send-btn").disabled = true;
-              document.getElementById("export-btn").disabled = true;
+              // document.getElementById("send-btn").disabled = true;
+              // document.getElementById("export-btn").disabled = true;
+              console.log("here 2");
+
+
             } else {
               alert("only admins can mute/unmute");
               document.getElementById("send-btn").disabled = false;
@@ -677,6 +706,7 @@ function insertList(users) {
               alert("only admins can mute/unmute");
               document.getElementById("send-btn").disabled = true;
               document.getElementById("export-btn").disabled = true;
+
             }
 
           }))
@@ -692,4 +722,4 @@ function insertList(users) {
 
 
 
-export { saveUserInfo,addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }
+export { saveUserInfo, addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }
