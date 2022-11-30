@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import {saveToExportPrivate,insertRegisteredListToPrivate, addProfile, saveUserInfo, addProfileRegistered, currentUser, loadProfileByToken, saveToExport, loadRegisteredUserList, token, logout, addSuccessLabel2, addErrorLabel2, logoutGuest, addSuccessLabel, addErrorLabel, login, createUser, loginAsGuest, loadUserList } from './rest';
-import {sendPlainMessagePrivate, openConnection, sendPlainMessage, stompClient } from './sockets';
+import {messages,sendPlainMessagePrivate, openConnection, sendPlainMessage, stompClient } from './sockets';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -245,6 +245,7 @@ $(document).ready(function () {
   $(document).on("click", "#toPrivateChat", function () {
     document.getElementById("mainChatRoom").style.display = "none";
     document.getElementById("privateChat").style.display = "block";
+    let messages=[];
   });
 });
 
@@ -252,7 +253,7 @@ $(document).ready(function () {
   $(document).on("click", "#toMainChatRoom", function () {
     document.getElementById("mainChatRoom").style.display = "block";
     document.getElementById("privateChat").style.display = "none";
-
+    let messages=[];
   });
 });
 

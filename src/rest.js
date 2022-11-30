@@ -1,5 +1,5 @@
 import { serverAddress } from "./constants"
-import {getMessageHistory,messages2, onMessageReceivedPrivate, stompClient, messages } from './sockets';
+import {getMessageHistory, onMessageReceivedPrivate, stompClient, messages } from './sockets';
 import { disableSignin, disableSignup } from './index';
 import { saveAs } from "file-saver";
 import axios from 'axios';
@@ -80,8 +80,8 @@ function saveToExportPrivate() {
 
   let data = "";
 
-  for (let i = 0; i < messages2.length; i++) {
-    data += messages2[i].sender + ": " + messages2[i].content;
+  for (let i = 0; i < messages.length; i++) {
+    data += messages[i].sender + ": " + messages[i].content;
     data += '\n';
   }
   saveChatToFile(data, "PrivateChat.txt");
