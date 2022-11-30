@@ -11,8 +11,9 @@ const socketFactory = () => {
     return new SockJS(serverAddress + '/ws');
 }
 
-async function getMessageHistory() {
-    fetch("http://localhost:8080/user/history?chatId=0", {
+async function getMessageHistory(chatId, chatHtmlTextAriea) {
+    // messages = [];
+    fetch(`http://localhost:8080/user/history?chatId=${chatId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -23,23 +24,27 @@ async function getMessageHistory() {
         let data = res.json();
         data.then(function (result) {
             // let msg = result.message;
+
             console.log("***********");
             console.log(result);
             console.log("***********");
             console.log(result.length);
+            console.log(messages);
+            // document.getElementById('#private-chat').innerHTML = "";
+
+            let textarea = document.querySelector('#private-chat');
+            textarea.value = '';
+            messages = [];
             for (let i = 0; i < result.length; i++) {
-                let textArea = $('#main-chat');
+                let textArea = $(chatHtmlTextAriea);
                 textArea.val(textArea.val() + "\n" + result[i]["sender"] + " : " + result[i]["content"]);
                 messages.push(result[i]);
             }
-
         });
-
-
     }))
 }
 
-// getMessageHistory();
+getMessageHistory("0", '#main-chat');
 
 
 const onMessageReceived = (payload) => {
@@ -79,7 +84,7 @@ const sendPlainMessage = (user, message) => {
 
 const sendPlainMessagePrivate = (user, message, id) => {
     console.log("------------------");
-    
+
     console.log(user + " " + message + " " + id);
 
     stompClient.send("/app/private-message", [], JSON.stringify({
@@ -99,4 +104,4 @@ const onMessageReceivedPrivate = (payload) => {
     textArea.val(textArea.val() + "\n" + message.sender + " : " + message.content);
 }
 
-export {messages2,onMessageReceivedPrivate,sendPlainMessagePrivate, messages, openConnection, sendPlainMessage, stompClient }
+export {getMessageHistory,messages2,onMessageReceivedPrivate,sendPlainMessagePrivate, messages, openConnection, sendPlainMessage, stompClient }

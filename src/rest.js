@@ -1,5 +1,5 @@
 import { serverAddress } from "./constants"
-import {messages2, onMessageReceivedPrivate, stompClient, messages } from './sockets';
+import {getMessageHistory,messages2, onMessageReceivedPrivate, stompClient, messages } from './sockets';
 import { disableSignin, disableSignup } from './index';
 import { saveAs } from "file-saver";
 import axios from 'axios';
@@ -527,8 +527,10 @@ function insertRegisteredListToPrivate(users) {
     </td>
     `
     $(".chatnow").each(function (index) {
+      
       $(this).on("click", function () {
         let id = $(this).attr('id');
+        // document.getElementById('#private-chat').innerHTML = "";
         let chatId
         var currentUserId = JSON.parse(sessionStorage.getItem("currentUser")).id;
         if (id < currentUserId)
@@ -557,6 +559,8 @@ function insertRegisteredListToPrivate(users) {
           });
         }))
 
+       
+        getMessageHistory(sessionStorage.getItem("currentChatId"), '#private-chat');
       })
 
     });
