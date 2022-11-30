@@ -38,7 +38,7 @@ async function getMessageHistory() {
     }))
 }
 
-getMessageHistory();
+// getMessageHistory();
 
 
 const onMessageReceived = (payload) => {
@@ -57,9 +57,10 @@ const onUserCreated = (payload) => {
 
 const onConnected = () => {
     stompClient.subscribe('/topic/mainChat', onMessageReceived);
+    // stompClient.subscribe(`/topic/private/${id}`,onMessageReceivedPrivate);
     stompClient.subscribe('/test', onUserCreated);
 }
-
+//  `${JSON.parse(sessionStorage.getItem("currentUser")).id}`
 const openConnection = () => {
     const socket = socketFactory();
     stompClient = Stomp.over(socket);
@@ -75,4 +76,26 @@ const sendPlainMessage = (user, message) => {
     }))
 }
 
-export { messages, openConnection, sendPlainMessage, stompClient }
+const sendPlainMessagePrivate = (user, message, id) => {
+    console.log("------------------");
+    
+    console.log(user + " " + message + " " + id);
+
+    stompClient.send("/app/private-message", [], JSON.stringify({
+        sender: user + " ",
+        content: " " + message,
+        token: sessionStorage.getItem("token"),
+        chatId: id
+    }))
+}
+
+const onMessageReceivedPrivate = (payload) => {
+    console.log("payload222222222222 : ", payload);
+    console.log(payload);
+    var message = JSON.parse(payload.body);
+    //messages.push(message)
+    let textArea = $('#private-chat');
+    textArea.val(textArea.val() + "\n" + message.sender + " : " + message.content);
+}
+
+export {onMessageReceivedPrivate,sendPlainMessagePrivate, messages, openConnection, sendPlainMessage, stompClient }

@@ -1,5 +1,5 @@
 import { serverAddress } from "./constants"
-import { stompClient, messages } from './sockets';
+import { onMessageReceivedPrivate,stompClient, messages } from './sockets';
 import { disableSignin, disableSignup } from './index';
 import { saveAs } from "file-saver";
 import axios from 'axios';
@@ -39,6 +39,7 @@ const login = (user) => {
         if (res.data.isMuted) {
           document.getElementById("send-btn").disabled = true;
           document.getElementById("export-btn").disabled = true;
+          
         } else {
           document.getElementById("send-btn").disabled = false;
           document.getElementById("export-btn").disabled = false;
@@ -128,9 +129,9 @@ function getUserByToken(token) {
       console.log("result : ", result);
       sessionStorage.setItem("currentUser", result);
       //currentUser = sessionStorage.getItem("currentUser");
-      stompClient.send("/app/hello", [],
-        JSON.stringify({ name: " " + sessionStorage.getItem("nickName") + " has " })
-      )
+      // stompClient.send("/app/hello", [],
+      //   JSON.stringify({ name: " " + sessionStorage.getItem("nickName") + " has " })
+    //  )
     });
   }))
 }
@@ -467,19 +468,93 @@ async function loadRegisteredUserList() {
   data.then(function (result) {
     listofUsers = result;
     insertRegisteredList(listofUsers);
+    insertRegisteredListToPrivate(listofUsers);
   });
 }
+
+
+
+
+
+
+
+
+
+function insertRegisteredListToPrivate(users) {
+
+  let table = document.getElementById("registered-list");
+  var tbody = table.getElementsByTagName('tbody')[0];
+  tbody.innerHTML = "";
+  users.forEach(element => {
+    let image = element.imgUrl;
+    console.log(element);
+    tbody.insertRow(0).innerHTML =
+      `
+    <td class="title" width="60%">
+      <div class="thumb">
+        <img width="40px" radius="50%" height="40px" class="img-fluid" src=${image} alt="">
+      </div>
+      <div class="candidate-list-details">
+        <div class="candidate-list-info">
+
+      <div class="candidate-list-title">
+     
+        <h5 class="mb-0"><button onClick="getUserById(${element.id})" class="btn btn-link"> ${element.nickName}  ${element.role == 1 ? "<span>*</span>" : " <span></span>"}</button></h5>
+      
+        <h6  id=${element.id} class="chatnow mb-0">Chat Now!</h6>
+      </div>
+
+      </div>
+      </div>
+    </td>
+
+    <td class="status">
+      <ul>
+        ${element.status}
+      </ul>
+    </td>
+    `
+    $(".chatnow").each(function (index) {
+      $(this).on("click", function () {
+        let id = $(this).attr('id');
+        let chatId
+        var currentUserId = JSON.parse(sessionStorage.getItem("currentUser")).id;
+        if (id < currentUserId)
+          chatId = id + "A" + currentUserId;
+        else
+          chatId = currentUserId + "A" + id;
+        sessionStorage.removeItem("currentChatId");
+        sessionStorage.setItem("currentChatId", chatId);
+        stompClient.unsubscribe("myTopicId");
+        stompClient.subscribe('/user/'+sessionStorage.getItem("currentChatId")+'/private', onMessageReceivedPrivate,{id:"myTopicId"});
+        
+      })
+
+    });
+  });
+
+}
+
+
+
+
+
+
+
+
+
 
 
 function insertRegisteredList(users) {
 
   let table = document.getElementById("candidates-list");
   var tbody = table.getElementsByTagName('tbody')[0];
+  tbody.innerHTML = "";
   users.forEach(element => {
-    if (element.isMuted&&element.nickName==sessionStorage.getItem("nickName")) {
+    if (element.isMuted && element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "(*) You Are Muted By The Admin!";
     }
-    if (!element.isMuted&&element.nickName==sessionStorage.getItem("nickName")) {
+    if (!element.isMuted && element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "";
     }
     let image = element.imgUrl;
@@ -511,7 +586,7 @@ function insertRegisteredList(users) {
     </td>
     `
 
-    $("mute").each(function (index) {
+    $(".mute").each(function (index) {
       $(this).on("click", function () {
         let id = $(this).attr('id');
         let token = sessionStorage.getItem("token");
@@ -530,8 +605,9 @@ function insertRegisteredList(users) {
             console.log(res);
             if (res.status == 200) {
               document.getElementById(id).innerText = 'unmute';
-              document.getElementById("send-btn").disabled = true;
-              document.getElementById("export-btn").disabled = true;
+              // document.getElementById("send-btn").disabled = true;
+              // document.getElementById("export-btn").disabled = true;
+              console.log("hi2");
 
 
             } else {
@@ -615,10 +691,10 @@ function insertList(users) {
   tbody.innerHTML = "";
   console.log(users);
   users.forEach(element => {
-    if (element.muted&&"Guest-"+element.nickName==sessionStorage.getItem("nickName")) {
+    if (element.muted && "Guest-" + element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "(*) You Are Muted By The Admin!";
     }
-    if (!element.muted&&"Guest-"+element.nickName==sessionStorage.getItem("nickName")) {
+    if (!element.muted && "Guest-" + element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "";
     }
 
@@ -722,4 +798,4 @@ function insertList(users) {
 
 
 
-export { saveUserInfo, addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }
+export { insertRegisteredListToPrivate, saveUserInfo, addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }

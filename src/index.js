@@ -1,6 +1,6 @@
 import $ from 'jquery'
-import { addProfile, saveUserInfo, addProfileRegistered, currentUser, loadProfileByToken, saveToExport, loadRegisteredUserList, token, logout, addSuccessLabel2, addErrorLabel2, logoutGuest, addSuccessLabel, addErrorLabel, login, createUser, loginAsGuest, loadUserList } from './rest';
-import { openConnection, sendPlainMessage, stompClient } from './sockets';
+import {insertRegisteredListToPrivate, addProfile, saveUserInfo, addProfileRegistered, currentUser, loadProfileByToken, saveToExport, loadRegisteredUserList, token, logout, addSuccessLabel2, addErrorLabel2, logoutGuest, addSuccessLabel, addErrorLabel, login, createUser, loginAsGuest, loadUserList } from './rest';
+import {sendPlainMessagePrivate, openConnection, sendPlainMessage, stompClient } from './sockets';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -14,8 +14,10 @@ $(() => {
     document.getElementById("send-btn").disabled = true;
     document.getElementById("export-btn").disabled = true;
     document.getElementById("profilePage").style.display = "none";
+    document.getElementById("privateChat").style.display = "none";
   }
   if (sessionStorage.getItem("currentUser") == null && sessionStorage.getItem("nickName") != null) {
+    document.getElementById("privateChat").style.display = "none";
     document.getElementById("profilePage").style.display = "none";
     document.getElementById("profileSection").innerHTML = "";
     addProfile();
@@ -26,6 +28,7 @@ $(() => {
 
   }
   if (sessionStorage.getItem("currentUser") != null) {
+    document.getElementById("privateChat").style.display = "none";
     document.getElementById("profilePage").style.display = "none";
     document.getElementById("profileSection").innerHTML = "";
     addProfileRegistered(JSON.parse(sessionStorage.getItem("currentUser")));
@@ -70,6 +73,11 @@ $(() => {
   $("#send-btn").on("click", () => {
     console.log(sessionStorage.getItem("nickName"), $('#message-input').val());
     sendPlainMessage(sessionStorage.getItem("nickName"), $('#message-input').val())
+  })
+
+  /////////////////////// WE NEED TO ADD ID FOR THE CHAT ////////////////////////////////////////////////////////////////////////////////////////////////////
+  $("#sendPrivate-btn").on("click", () => {
+    sendPlainMessagePrivate(sessionStorage.getItem("nickName"), $('#messagePrivate-input').val(),sessionStorage.getItem("currentChatId"))
   })
 
 
@@ -219,14 +227,36 @@ $(document).ready(function () {
     else
       mycurrentUser.private = true;
     sessionStorage.removeItem("currentUser");
-    sessionStorage.setItem("currentUser",JSON.stringify(mycurrentUser));
+    sessionStorage.setItem("currentUser", JSON.stringify(mycurrentUser));
     sessionStorage.removeItem("nickName");
-    sessionStorage.setItem("nickName",mycurrentUser.nickName);
+    sessionStorage.setItem("nickName", mycurrentUser.nickName);
 
     console.log(mycurrentUser);
     saveUserInfo(mycurrentUser);
   });
 });
+
+
+/* Private Page*/
+$(document).ready(function () {
+  $(document).on("click", "#toPrivateChat", function () {
+    document.getElementById("mainChatRoom").style.display = "none";
+    document.getElementById("privateChat").style.display = "block";
+  });
+});
+
+$(document).ready(function () {
+  $(document).on("click", "#toMainChatRoom", function () {
+    document.getElementById("mainChatRoom").style.display = "block";
+    document.getElementById("privateChat").style.display = "none";
+
+  });
+});
+
+
+
+
+
 
 openConnection();
 export { disableSignin, disableSignup }
