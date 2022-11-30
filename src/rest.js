@@ -1,5 +1,5 @@
 import { serverAddress } from "./constants"
-import { onMessageReceivedPrivate,stompClient, messages } from './sockets';
+import { getMessageHistory, onMessageReceivedPrivate, stompClient, messages } from './sockets';
 import { disableSignin, disableSignup } from './index';
 import { saveAs } from "file-saver";
 import axios from 'axios';
@@ -39,7 +39,7 @@ const login = (user) => {
         if (res.data.isMuted) {
           document.getElementById("send-btn").disabled = true;
           document.getElementById("export-btn").disabled = true;
-          
+
         } else {
           document.getElementById("send-btn").disabled = false;
           document.getElementById("export-btn").disabled = false;
@@ -131,7 +131,7 @@ function getUserByToken(token) {
       //currentUser = sessionStorage.getItem("currentUser");
       // stompClient.send("/app/hello", [],
       //   JSON.stringify({ name: " " + sessionStorage.getItem("nickName") + " has " })
-    //  )
+      //  )
     });
   }))
 }
@@ -515,8 +515,10 @@ function insertRegisteredListToPrivate(users) {
     </td>
     `
     $(".chatnow").each(function (index) {
+      
       $(this).on("click", function () {
         let id = $(this).attr('id');
+        // document.getElementById('#private-chat').innerHTML = "";
         let chatId
         var currentUserId = JSON.parse(sessionStorage.getItem("currentUser")).id;
         if (id < currentUserId)
@@ -526,8 +528,9 @@ function insertRegisteredListToPrivate(users) {
         sessionStorage.removeItem("currentChatId");
         sessionStorage.setItem("currentChatId", chatId);
         stompClient.unsubscribe("myTopicId");
-        stompClient.subscribe('/user/'+sessionStorage.getItem("currentChatId")+'/private', onMessageReceivedPrivate,{id:"myTopicId"});
-        
+        stompClient.subscribe('/user/' + sessionStorage.getItem("currentChatId") + '/private', onMessageReceivedPrivate, { id: "myTopicId" });
+       
+        getMessageHistory(sessionStorage.getItem("currentChatId"), '#private-chat');
       })
 
     });
