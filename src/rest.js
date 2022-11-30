@@ -1,5 +1,5 @@
 import { serverAddress } from "./constants"
-import { onMessageReceivedPrivate,stompClient, messages } from './sockets';
+import {messages2, onMessageReceivedPrivate, stompClient, messages } from './sockets';
 import { disableSignin, disableSignup } from './index';
 import { saveAs } from "file-saver";
 import axios from 'axios';
@@ -39,7 +39,7 @@ const login = (user) => {
         if (res.data.isMuted) {
           document.getElementById("send-btn").disabled = true;
           document.getElementById("export-btn").disabled = true;
-          
+
         } else {
           document.getElementById("send-btn").disabled = false;
           document.getElementById("export-btn").disabled = false;
@@ -73,6 +73,18 @@ function saveToExport() {
     data += '\n';
   }
   saveChatToFile(data, "MainChat.txt");
+}
+
+function saveToExportPrivate() {
+  const fs = require('fs');
+
+  let data = "";
+
+  for (let i = 0; i < messages2.length; i++) {
+    data += messages2[i].sender + ": " + messages2[i].content;
+    data += '\n';
+  }
+  saveChatToFile(data, "PrivateChat.txt");
 }
 
 
@@ -131,7 +143,7 @@ function getUserByToken(token) {
       //currentUser = sessionStorage.getItem("currentUser");
       // stompClient.send("/app/hello", [],
       //   JSON.stringify({ name: " " + sessionStorage.getItem("nickName") + " has " })
-    //  )
+      //  )
     });
   }))
 }
@@ -499,9 +511,9 @@ function insertRegisteredListToPrivate(users) {
 
       <div class="candidate-list-title">
      
-        <h5 class="mb-0"><button onClick="getUserById(${element.id})" class="btn btn-link"> ${element.nickName}  ${element.role == 1 ? "<span>*</span>" : " <span></span>"}</button></h5>
+        <h5 class="mb-0"><button id=${element.nickName} onClick="getUserById(${element.id})" class="chatwith btn btn-link"> ${element.nickName}  ${element.role == 1 ? "<span>*</span>" : " <span></span>"}</button></h5>
       
-        <h6  id=${element.id} class="chatnow mb-0">Chat Now!</h6>
+        <button  id=${element.id} class="chatnow">Chat Now!</button>
       </div>
 
       </div>
@@ -526,11 +538,32 @@ function insertRegisteredListToPrivate(users) {
         sessionStorage.removeItem("currentChatId");
         sessionStorage.setItem("currentChatId", chatId);
         stompClient.unsubscribe("myTopicId");
-        stompClient.subscribe('/user/'+sessionStorage.getItem("currentChatId")+'/private', onMessageReceivedPrivate,{id:"myTopicId"});
-        
+        stompClient.subscribe('/user/' + sessionStorage.getItem("currentChatId") + '/private', onMessageReceivedPrivate, { id: "myTopicId" });
+
+        fetch("http://localhost:8080/user/userById", {
+          method: 'POST',
+          body: JSON.stringify({ token: id }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
+          }
+        }).then((res => {
+          let data = res.json();
+          data.then(function (result) {
+            console.log(result);
+            let nickName = result.nickName; 
+            document.getElementById("chatWith").textContent = "Chat with "+nickName;
+          });
+        }))
+
       })
 
     });
+
+
+
+
   });
 
 }
@@ -798,4 +831,4 @@ function insertList(users) {
 
 
 
-export { insertRegisteredListToPrivate, saveUserInfo, addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }
+export {saveToExportPrivate, insertRegisteredListToPrivate, saveUserInfo, addProfile, addProfileRegistered, currentUser, loadProfileByToken, getUserByToken, saveToExport, loadRegisteredUserList, token, logout, addErrorLabel2, addSuccessLabel2, logoutGuest, addSuccessLabel, createUser, login, loginAsGuest, loadUserList, addErrorLabel }

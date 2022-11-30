@@ -6,6 +6,7 @@ import $ from 'jquery'
 import { serverAddress } from "./constants"
 let stompClient;
 let messages = [];
+let messages2 = [];
 const socketFactory = () => {
     return new SockJS(serverAddress + '/ws');
 }
@@ -90,12 +91,12 @@ const sendPlainMessagePrivate = (user, message, id) => {
 }
 
 const onMessageReceivedPrivate = (payload) => {
-    console.log("payload222222222222 : ", payload);
+    console.log("payload2 : ", payload);
     console.log(payload);
     var message = JSON.parse(payload.body);
-    //messages.push(message)
+    messages2.push(message)
     let textArea = $('#private-chat');
     textArea.val(textArea.val() + "\n" + message.sender + " : " + message.content);
 }
 
-export {onMessageReceivedPrivate,sendPlainMessagePrivate, messages, openConnection, sendPlainMessage, stompClient }
+export {messages2,onMessageReceivedPrivate,sendPlainMessagePrivate, messages, openConnection, sendPlainMessage, stompClient }
