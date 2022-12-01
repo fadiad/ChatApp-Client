@@ -51,7 +51,8 @@ const login = (user) => {
         disableSignin();
 
         sessionStorage.setItem("token", result);
-        addProfileRegistered(currentUser)
+        addProfileRegistered(currentUser);
+        document.getElementById("toPrivateChat").style.display = "block";
         stompClient.send("/app/hello", [],
           JSON.stringify({ name: " " + sessionStorage.getItem("nickName") + " has " })
         )
@@ -209,6 +210,8 @@ const loginAsGuest = (user) => {
         addSuccessLabel("Connected!");
         document.getElementById("send-btn").disabled = false;
         document.getElementById("export-btn").disabled = false;
+        document.getElementById("toPrivateChat").style.display = "none";
+
       }
       else
         addErrorLabel(msg);
@@ -586,7 +589,7 @@ function insertRegisteredList(users) {
 
   let table = document.getElementById("candidates-list");
   var tbody = table.getElementsByTagName('tbody')[0];
-  tbody.innerHTML = "";
+  //tbody.innerHTML = "";
   users.forEach(element => {
     if (element.isMuted && element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "(*) You Are Muted By The Admin!";

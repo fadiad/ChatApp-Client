@@ -15,7 +15,10 @@ $(() => {
     document.getElementById("export-btn").disabled = true;
     document.getElementById("profilePage").style.display = "none";
     document.getElementById("privateChat").style.display = "none";
+    document.getElementById("toPrivateChat").style.display = "none";
+
   }
+  //for Guest
   if (sessionStorage.getItem("currentUser") == null && sessionStorage.getItem("nickName") != null) {
     document.getElementById("privateChat").style.display = "none";
     document.getElementById("profilePage").style.display = "none";
@@ -25,8 +28,10 @@ $(() => {
     addSuccessLabel("Connected!");
     document.getElementById("send-btn").disabled = false;
     document.getElementById("export-btn").disabled = false;
+    document.getElementById("toPrivateChat").style.display = "none";
 
   }
+  //for registered User
   if (sessionStorage.getItem("currentUser") != null) {
     document.getElementById("privateChat").style.display = "none";
     document.getElementById("profilePage").style.display = "none";
@@ -36,6 +41,8 @@ $(() => {
     addSuccessLabel("Connected!");
     document.getElementById("send-btn").disabled = false;
     document.getElementById("export-btn").disabled = false;
+    document.getElementById("toPrivateChat").style.display = "block";
+
 
   }
 
