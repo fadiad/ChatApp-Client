@@ -18,7 +18,7 @@ $(() => {
     document.getElementById("toPrivateChat").style.display = "none";
 
   }
-  //for Guest
+ 
   if (sessionStorage.getItem("currentUser") == null && sessionStorage.getItem("nickName") != null) {
     document.getElementById("privateChat").style.display = "none";
     document.getElementById("profilePage").style.display = "none";
@@ -31,7 +31,7 @@ $(() => {
     document.getElementById("toPrivateChat").style.display = "none";
 
   }
-  //for registered User
+   
   if (sessionStorage.getItem("currentUser") != null) {
     document.getElementById("privateChat").style.display = "none";
     document.getElementById("profilePage").style.display = "none";
@@ -42,8 +42,6 @@ $(() => {
     document.getElementById("send-btn").disabled = false;
     document.getElementById("export-btn").disabled = false;
     document.getElementById("toPrivateChat").style.display = "block";
-
-
   }
 
 
@@ -55,7 +53,7 @@ $(() => {
     myVar = setTimeout(showList, 10000);
   }
   function stopFunction() {
-    clearTimeout(myVar); // stop the timer
+    clearTimeout(myVar);  
   }
   $(document).ready(function () {
     showList();
@@ -82,7 +80,6 @@ $(() => {
     sendPlainMessage(sessionStorage.getItem("nickName"), $('#message-input').val())
   })
 
-  /////////////////////// WE NEED TO ADD ID FOR THE CHAT ////////////////////////////////////////////////////////////////////////////////////////////////////
   $("#sendPrivate-btn").on("click", () => {
     sendPlainMessagePrivate(sessionStorage.getItem("nickName"), $('#messagePrivate-input').val(),sessionStorage.getItem("currentChatId"))
   })
@@ -155,9 +152,6 @@ $(document).ready(function () {
 $(document).ready(function () {
   $(document).on("click", "#logout", function () {
     logout(sessionStorage.getItem("token"));
-    // document.getElementById("profilePage").style.display = "none";
-    // document.getElementById("profileSection").innerHTML="";
-    //
   })
 });
 
@@ -246,8 +240,6 @@ $(document).ready(function () {
   });
 });
 
-
-/* Private Page*/
 $(document).ready(function () {
   $(document).on("click", "#toPrivateChat", function () {
     document.getElementById("mainChatRoom").style.display = "none";
@@ -263,11 +255,6 @@ $(document).ready(function () {
     let messages=[];
   });
 });
-
-
-
-
-
 
 openConnection();
 export { disableSignin, disableSignup }

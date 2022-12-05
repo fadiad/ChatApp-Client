@@ -7,16 +7,6 @@ import axios from 'axios';
 let token;
 let currentUser;
 
-// async function myF() {
-//   if (sessionStorage.getItem("token") != null) {
-//     currentUser = await axios.get(serverAddress + "/user/userByToken?token=" + result).data;
-//   }
-// }
-
-// myF();
-
-
-
 const login = (user) => {
 
   fetch(serverAddress + "/auth/login", {
@@ -96,33 +86,6 @@ function saveChatToFile(data, filename) {
   saveAs(blob, filename);
 }
 
-
-// function getUserByToken(token) {
-
-//   fetch(serverAddress + "/user/userByToken", {
-//     method: 'POST',
-//     body: JSON.stringify({ token }),
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Access-Control-Allow-Origin': '*',
-//       'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
-//     }
-//   }).then((res => {
-//     let data = res.json();
-//     data.then(function (result) {
-//       let msg = result.message;
-//       console.log("***********");
-//       console.log(result);
-//       currentUser = result;
-//       addProfileRegistered(result);
-//       stompClient.send("/app/hello", [],
-//         JSON.stringify({ name: " " + result.nickName + " has " })
-//       )
-
-//     });
-//   }))
-// }
-
 function getUserByToken(token) {
   token = sessionStorage.getItem("token")
 
@@ -141,10 +104,7 @@ function getUserByToken(token) {
       let msg = result.message;
       console.log("result : ", result);
       sessionStorage.setItem("currentUser", result);
-      //currentUser = sessionStorage.getItem("currentUser");
-      // stompClient.send("/app/hello", [],
-      //   JSON.stringify({ name: " " + sessionStorage.getItem("nickName") + " has " })
-      //  )
+  
     });
   }))
 }
@@ -220,40 +180,6 @@ const loginAsGuest = (user) => {
 }
 
 
-// const loginAsGuest = (user) => {
-//   fetch(serverAddress + "/auth/loginGuest", {
-//     method: 'POST',
-//     body: JSON.stringify({ nickName: user.nickName }),
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Access-Control-Allow-Origin': '*',
-//       'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
-//     }
-//   }).then((res => {
-//     let data = res.json();
-//     data.then(function (result) {
-//       let msg = result.message;
-//       if (msg == null) {
-//         //  console.log("result : " , result);
-//         sessionStorage.setItem("nickName", user.nickName);
-//         sessionStorage.setItem("token", result);
-
-//         stompClient.send("/app/hello", [],
-//           JSON.stringify({ name: "Guest-" + sessionStorage.getItem("nickName") + " has " })
-//         )
-
-//         addProfile(result);
-//         disableSignin();
-//         addSuccessLabel("Connected!");
-//         document.getElementById("send-btn").disabled = false;
-//         document.getElementById("export-btn").disabled = false;
-//       }
-//       else { }
-//       addErrorLabel(msg);
-//     });
-//   }))
-// }
-
 function addErrorLabel(msg) {
   let label = document.getElementById("errorLbl");
   label.innerHTML = `${msg}`
@@ -286,22 +212,6 @@ function addSuccessLabel3(msg) {
   label.innerHTML = `${msg}`
   addErrorLabel3("");
 }
-
-// function addProfile(user) {
-
-//   let profile = document.getElementById("profileSection");
-
-//   profile.insertAdjacentHTML('afterbegin',
-//     `      
-//   <div class="thumb">
-//     <img width="40px" radius="50%" height="40px" class="img-fluid" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="">
-//   </div>
-//     <h5 class="mb-0" id="currentUserName">Guest-${user.nickName}</h5>
-//     <a class="mb-0" id="logoutG" href="">Logout</a>
-//     `
-//   )
-
-// }
 
 
 function addProfile() {
@@ -338,23 +248,6 @@ function addProfileRegistered(currentUser) {
     `)
 }
 
-// function logout(token) {
-//   fetch(serverAddress + "/auth/logout", {
-//     method: 'POST',
-//     body: JSON.stringify({ token }),
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Access-Control-Allow-Origin': '*',
-//       'Access-Control-Allow-Methods': 'POST,PATCH,OPTIONS'
-//     }
-//   }).then((res => {
-//     let data = res.text();
-//     data.then(function (result) {
-//       console.log("logout");
-//       console.log(result);
-//     });
-//   }))
-// }
 
 function logout(token) {
   token = sessionStorage.getItem("token")
@@ -487,14 +380,6 @@ async function loadRegisteredUserList() {
   });
 }
 
-
-
-
-
-
-
-
-
 function insertRegisteredListToPrivate(users) {
 
   let table = document.getElementById("registered-list");
@@ -533,7 +418,6 @@ function insertRegisteredListToPrivate(users) {
       
       $(this).on("click", function () {
         let id = $(this).attr('id');
-        // document.getElementById('#private-chat').innerHTML = "";
         let chatId
         var currentUserId = JSON.parse(sessionStorage.getItem("currentUser")).id;
         if (id < currentUserId)
@@ -565,12 +449,7 @@ function insertRegisteredListToPrivate(users) {
        
         getMessageHistory(sessionStorage.getItem("currentChatId"), '#private-chat');
       })
-
     });
-
-
-
-
   });
 
 }
@@ -589,7 +468,7 @@ function insertRegisteredList(users) {
 
   let table = document.getElementById("candidates-list");
   var tbody = table.getElementsByTagName('tbody')[0];
-  //tbody.innerHTML = "";
+
   users.forEach(element => {
     if (element.isMuted && element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "(*) You Are Muted By The Admin!";
@@ -645,10 +524,7 @@ function insertRegisteredList(users) {
             console.log(res);
             if (res.status == 200) {
               document.getElementById(id).innerText = 'unmute';
-              // document.getElementById("send-btn").disabled = true;
-              // document.getElementById("export-btn").disabled = true;
               console.log("hi2");
-
 
             } else {
               alert("only admins can mute/unmute");
@@ -693,37 +569,6 @@ function insertRegisteredList(users) {
 }
 
 
-
-// function insertList(users) {
-
-//   let table = document.getElementById("candidates-list");
-//   var tbody = table.getElementsByTagName('tbody')[0];
-//   tbody.innerHTML = "";
-//   users.forEach(element => {
-//     tbody.insertRow(-1).innerHTML =
-//       `
-//     <td class="title" width="60%">
-//       <div class="thumb">
-//         <img width="40px" radius="50%" height="40px" class="img-fluid" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="">
-//       </div>
-//       <div class="candidate-list-details">
-//         <div class="candidate-list-info">
-//           <div class="candidate-list-title">
-//             <h5 class="mb-0"><a href="#">Guest-${element.nickName}</a></h5>
-//           </div>
-//         </div>
-//       </div>
-//     </td>
-
-//     <td class="status">
-//       <ul>
-//         Online
-//       </ul>
-//     </td>
-//     `
-//   });
-// }
-
 function insertList(users) {
 
   let table = document.getElementById("candidates-list");
@@ -737,10 +582,6 @@ function insertList(users) {
     if (!element.muted && "Guest-" + element.nickName == sessionStorage.getItem("nickName")) {
       document.getElementById("mutelbl").textContent = "";
     }
-
-    // else {
-    //   document.getElementById("mutelbl").textContent = "";
-    // }
 
 
     tbody.insertRow(-1).innerHTML =
@@ -789,10 +630,7 @@ function insertList(users) {
             console.log(res);
             if (res.status == 200) {
               document.getElementById(nickName).innerText = 'unmute';
-              // document.getElementById("send-btn").disabled = true;
-              // document.getElementById("export-btn").disabled = true;
               console.log("here 2");
-
 
             } else {
               alert("only admins can mute/unmute");
